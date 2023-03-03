@@ -4,6 +4,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todo_start_pack/providers.dart';
 import 'package:todo_start_pack/view/home_page.dart';
 
+// TODO: add firebase_core package dependency and uncomment the following line
+// import 'package:firebase_core/firebase_core.dart';
 void main() {
   runApp(const ProviderScope(child: MyApp()));
 }
