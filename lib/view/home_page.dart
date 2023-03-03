@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:todo_start_pack/dialog/add_item_dialog.dart';
@@ -17,84 +18,71 @@ class MyHomePage extends ConsumerStatefulWidget {
 // generate a uuid now:
 // https://www.uuidgenerator.net/version4
 class _MyHomePageState extends ConsumerState<MyHomePage> {
-  final items = <Item>[
-    Item(id: '95a11f80-7029-4012-8714-3a5a1ed7b366', value: '🛒 Buy groceries'),
-    Item(id: 'b3b4c1c0-5b1f-4b2e-9c1c-3a5a1ed7b366', value: '📚 Read a book'),
-    Item(id: 'c3b4c1c0-5b1f-4b2e-9c1c-3a5a1ed7b366', value: '🏃‍♂️ Exercise'),
-  ];
+  var items = <Item>[];
+
+  @override
+  void initState() {
+    super.initState();
+    getItems();
+  }
+
+  Future<void> getItems() async {
+    final collection =
+        await FirebaseFirestore.instance.collection("items").get();
+
+    setState(() {
+      collection.docs.forEach((element) {
+        items.add(Item(id: element.id, value: element.data()['item']));
+      });
+    });
+  }
 
   Future<void> addItem(Item item) async {
-    // Simulate a network request to add an item to the list
-    // Future.delayed method is a fake network request that takes 1 second
-    await Future.delayed(const Duration(seconds: 1));
+    items = [];
 
-    /// Generate a unique id for the item.
-    /// In this example, we use the uuid package.
-    /// But in firebase, we do not need to generate a unique id.
-    /// Since, the firebase automatically generates a unique id for each document.
-    const uuid = Uuid();
+    await FirebaseFirestore.instance
+        .collection("items")
+        .add({'item': item.value});
+
+    final collection =
+        await FirebaseFirestore.instance.collection("items").get();
+
     setState(() {
-      items.add(Item(id: uuid.v4(), value: item.value));
+      collection.docs.forEach((element) {
+        items.add(Item(id: element.id, value: element.data()['item']));
+      });
     });
-
-    // TODO: delete the simulated network request above and do a network request
-    // // Reset the items list
-    // items = [];
-    // to add an item to the list by using the Firebase
-    //For example you can use the following code:
-    // await FirebaseFirestore.instance.collection([your_collection_name]).add({'item': item.value});
-    // Then you can use the following code to get the list of items:
-    // FirebaseFirestore.instance.collection([your_collection_name]).get().then((value) {
-    //   value.docs.forEach((element) {
-    //     items.add(Item(id: element.id, value: element.data()['item']));
-    //   });
-    // });
   }
 
   Future<void> updateItem(Item item) async {
-    // Simulate a network request to update an item in the list
-    // Future.delayed method is a fake network request that takes 1 second
-    await Future.delayed(const Duration(seconds: 1));
+    items = [];
+
+    await FirebaseFirestore.instance
+        .collection("items")
+        .doc(item.id)
+        .update({'item': item.value});
+
+    final collection =
+        await FirebaseFirestore.instance.collection("items").get();
 
     setState(() {
-      items[items.indexWhere((element) => element.id == item.id)] = item;
+      collection.docs.forEach((element) {
+        items.add(Item(id: element.id, value: element.data()['item']));
+      });
     });
-
-    // TODO: delete the simulated network request above and do a network request
-    // // Reset the items list
-    // items = [];
-    // to update an item in the list by using the Firebase
-    // For example you can use the following code:
-    // await FirebaseFirestore.instance.collection([your_collection_name]).doc(item.id).update({'item': item.value});
-    // Then you can use the following code to get the list of items:
-    // FirebaseFirestore.instance.collection([your_collection_name]).get().then((value) {
-    //   value.docs.forEach((element) {
-    //     items.add(Item(id: element.id, value: element.data()['item']));
-    //   });
-    // });
   }
 
   Future<void> deleteItem(Item item) async {
-    // Simulate a network request to delete an item from the list
-    // Future.delayed method is a fake network request that takes 1 second
-    await Future.delayed(const Duration(seconds: 1));
+    items = [];
+    await FirebaseFirestore.instance.collection("items").doc(item.id).delete();
+    final collection =
+        await FirebaseFirestore.instance.collection("items").get();
 
     setState(() {
-      items.removeWhere((element) => element.id == item.id);
+      collection.docs.forEach((element) {
+        items.add(Item(id: element.id, value: element.data()['item']));
+      });
     });
-
-    // TODO: delete the simulated network request above and do a network request
-    // // Reset the items list
-    // items = [];
-    // to delete an item from the list by using the Firebase
-    // For example you can use the following code:
-    // await FirebaseFirestore.instance.collection([your_collection_name]).doc(item.id).delete();
-    // Then you can use the following code to get the list of items:
-    // FirebaseFirestore.instance.collection([your_collection_name]).get().then((value) {
-    //   value.docs.forEach((element) {
-    //     items.add(Item(id: element.id, value: element.data()['item']));
-    //   });
-    // });
   }
 
   @override

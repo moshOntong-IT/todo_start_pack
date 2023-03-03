@@ -5,8 +5,22 @@ import 'package:todo_start_pack/providers.dart';
 import 'package:todo_start_pack/view/home_page.dart';
 
 // TODO: add firebase_core package dependency and uncomment the following line
-// import 'package:firebase_core/firebase_core.dart';
-void main() {
+import 'package:firebase_core/firebase_core.dart';
+
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: const FirebaseOptions(
+        apiKey: "AIzaSyDMADXJLqsvHYgdM4RiVacVXW7dg-BNPzM",
+        authDomain: "flutter-starter-pack-9445c.firebaseapp.com",
+        projectId: "flutter-starter-pack-9445c",
+        storageBucket: "flutter-starter-pack-9445c.appspot.com",
+        messagingSenderId: "316657740005",
+        appId: "1:316657740005:web:3cc6b8553848d266758c0c"),
+  );
+
+  // Initialize Firebase
+
   runApp(const ProviderScope(child: MyApp()));
 }
 
